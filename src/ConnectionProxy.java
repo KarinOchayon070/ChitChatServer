@@ -6,9 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+
+import java.util.Iterator;
 import java.util.Map;
 
-public class ConnectionProxy extends Thread {
+public class ConnectionProxy extends Thread implements ClientConnectionIterator {
+
+    private Iterator<ConnectionProxy> iterator;
     private String nickName;
     private Socket clientSocket;
     private ChatRoom chatRoom;
@@ -44,7 +48,9 @@ public class ConnectionProxy extends Thread {
         this.clientSocket = clientSocket;
         this.inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        iterator = ConnectionProxy.clientConnections.values().iterator();
     }
+
 
     @Override
     public void run() {
@@ -54,21 +60,48 @@ public class ConnectionProxy extends Thread {
             if(request.isEmpty()) return;
 
             Message message = gson.fromJson(request, Message.class);
+            this.setNickName(message.getNickName());
 
-            CommandInterface command;
-            if (message.getRecipient().equalsIgnoreCase("global")) {
-                command = new GlobalChatCommand(message, this);
-            } else {
-                command = new OneOnOneChatCommand(message, this);
+            this.globalChatRoom.addClient(this);
+            Message joinedMessage = new Message(message.getNickName(), "Has joined the chat", message.getRecipient() );
+            this.globalChatRoom.broadcastMessage(joinedMessage, this);
+
+
+            try {
+                while ((request = this.getInputReader().readLine()) != null) {
+                    message = gson.fromJson(request, Message.class);
+
+                    CommandInterface command;
+                    if (message.getRecipient().equalsIgnoreCase("global")) {
+                        command = new GlobalChatCommand(message, this);
+                    } else {
+                        command = new OneOnOneChatCommand(message, this);
+                    }
+
+                    command.execute();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            command.execute();
+
 
             // If the client disconnected, remove its socket from the list
             clientConnections.remove(clientSocket);
+            globalChatRoom.removeClient(this);
             clientSocket.close();
             System.out.println("Client disconnected: " + clientSocket.getInetAddress());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public ConnectionProxy next() {
+        return iterator.next();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return iterator.hasNext();
     }
 }

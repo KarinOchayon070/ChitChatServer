@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class OneOnOneChatCommand implements CommandInterface {
     private Message message;
@@ -13,9 +14,7 @@ public class OneOnOneChatCommand implements CommandInterface {
 
     @Override
     public void execute() {
-        try {
-            connectionProxy.setNickName(message.getNickName());
-            String recipient = message.getRecipient();
+            String recipient = this.message.getRecipient();
 
             ConnectionProxy targetProxy = findConnectionProxyByUsername(recipient);
 
@@ -25,22 +24,15 @@ public class OneOnOneChatCommand implements CommandInterface {
                 return;
             }
 
-            this.message.setMessage("Sent private message to "+ recipient);
-            this.sendMessageToSelf();
 
-
-            String clientMessage;
-            while ((clientMessage = connectionProxy.getInputReader().readLine()) != null) {
-                System.out.println("Received message from client: " + clientMessage);
-                targetProxy.getOutputWriter().println(clientMessage);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            System.out.println("Received oneOnOne message from client: " + this.message.getNickName());
+            this.sendMessageToRecipient(targetProxy);
     }
 
     private ConnectionProxy findConnectionProxyByUsername(String recipient) {
-        for (ConnectionProxy proxy : ConnectionProxy.clientConnections.values()) {
+        Iterator<ConnectionProxy> iterator = ConnectionProxy.clientConnections.values().iterator();
+        while (iterator.hasNext()) {
+            ConnectionProxy proxy = iterator.next();
             if (recipient.equalsIgnoreCase(proxy.getNickName())) {
                 return proxy;
             }
@@ -48,6 +40,10 @@ public class OneOnOneChatCommand implements CommandInterface {
         return null;
     }
 
+    private void sendMessageToRecipient(ConnectionProxy targetProxy){
+        String json = gson.toJson(this.message);
+        targetProxy.getOutputWriter().println(json);
+    }
     private void sendMessageToSelf(){
         String json = gson.toJson(this.message);
         connectionProxy.getOutputWriter().println(json);

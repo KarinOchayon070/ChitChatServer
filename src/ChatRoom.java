@@ -1,25 +1,27 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.Gson;
+
+import java.net.Socket;
+import java.util.*;
 
 public class ChatRoom {
     private String name;
-    private List<ConnectionProxy> connectionProxies;
+    private  Map<Socket, ConnectionProxy> connectionProxies;
     private static Map<String, ChatRoom> oneOnOneChatRooms = new HashMap<>();
+    private Gson gson =  new Gson();
+
 
     public ChatRoom(String name) {
         this.name = name;
-        this.connectionProxies = new ArrayList<>();
+        this.connectionProxies = new HashMap<>();
     }
 
     public void addClient(ConnectionProxy connectionProxy) {
-        connectionProxies.add(connectionProxy);
+        connectionProxies.put(connectionProxy.getClientSocket(), connectionProxy);
         ConnectionProxy.clientConnections.put(connectionProxy.getClientSocket(), connectionProxy);
     }
 
     public void removeClient(ConnectionProxy connectionProxy) {
-        connectionProxies.remove(connectionProxy);
+        connectionProxies.remove(connectionProxy.getClientSocket());
         ConnectionProxy.clientConnections.remove(connectionProxy.getClientSocket());
 
         // If the chat room is empty, remove it
@@ -28,9 +30,18 @@ public class ChatRoom {
         }
     }
 
-    public void broadcastMessage(String message) {
-        for (ConnectionProxy connectionProxy : connectionProxies) {
-            connectionProxy.getOutputWriter().println(message);
+    public void broadcastMessage(String message,  ConnectionProxy sender) {
+        Iterator<ConnectionProxy> iterator = connectionProxies.values().iterator();
+        while (iterator.hasNext()) {
+            ConnectionProxy connectionProxy = iterator.next();
+            if (connectionProxy.getClientSocket() != sender.getClientSocket()) {
+                connectionProxy.getOutputWriter().println(message);
+            }
         }
+    }
+
+    public void broadcastMessage(Message message,  ConnectionProxy sender) {
+        String messageJson = gson.toJson(message);
+        this.broadcastMessage(messageJson, sender);
     }
 }

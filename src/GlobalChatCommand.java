@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import java.io.IOException;
 
 public class GlobalChatCommand implements CommandInterface {
@@ -11,20 +13,9 @@ public class GlobalChatCommand implements CommandInterface {
 
     @Override
     public void execute() {
-        try {
-            connectionProxy.setNickName(message.getNickName());
             connectionProxy.setChatRoom(connectionProxy.globalChatRoom);
-            connectionProxy.globalChatRoom.addClient(connectionProxy);
 
-            String clientMessage;
-            while ((clientMessage = connectionProxy.getInputReader().readLine()) != null) {
-                System.out.println("Received message from client: " + clientMessage);
-                connectionProxy.globalChatRoom.broadcastMessage(clientMessage);
-            }
-
-            connectionProxy.globalChatRoom.removeClient(connectionProxy);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            System.out.println("Received global message from client: " + message.getNickName());
+            connectionProxy.globalChatRoom.broadcastMessage(message, connectionProxy);
     }
 }
