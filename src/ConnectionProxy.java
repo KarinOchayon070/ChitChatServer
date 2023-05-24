@@ -1,80 +1,74 @@
-import java.io.*;
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ConnectionProxy extends Thread implements StringConsumer, StringProducer {
-
-    private StringConsumer consumer;
-    private Socket socket;
-    private InputStream is;
-    private OutputStream os;
-    private DataInputStream dis;
-    private DataOutputStream dos;
-
-
-    public ConnectionProxy(Socket socket) throws ChatException{
-        try{
-            this.socket = socket;
-            is = socket.getInputStream();
-            os = socket.getOutputStream();
-            dis = new DataInputStream(is);
-            dos = new DataOutputStream(os);
-        }catch (IOException e){
-            throw new ChatException("Problem creating streams", e);
-        }
+public class ConnectionProxy extends Thread {
+    private String nickName;
+    private Socket clientSocket;
+    private ChatRoom chatRoom;
+    private BufferedReader inputReader;
+    private PrintWriter outputWriter;
+    public static ChatRoom globalChatRoom = new ChatRoom("global");
+    public static Map<Socket, ConnectionProxy> clientConnections = new HashMap<>();
+    private static Gson gson = new Gson();
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+    public BufferedReader getInputReader() {
+        return inputReader;
     }
 
-    public  ConnectionProxy(String computer, int port) throws ChatException{
-        try{
-            this.socket = new Socket(computer, port);
-            is = socket.getInputStream();
-            os = socket.getOutputStream();
-            dis = new DataInputStream(is);
-            dos = new DataOutputStream(os);
-        }
-        catch (IOException e){
-            throw new ChatException(e.getMessage(), e.getCause());
-        }
+    public PrintWriter getOutputWriter() {
+        return outputWriter;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
+
+    public ConnectionProxy(Socket clientSocket) throws IOException {
+        this.clientSocket = clientSocket;
+        this.inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
     }
 
     @Override
-    public void consume(String text) throws ChatException {
-        try {
-            System.out.println("inside consume invoked on a ConnectionProxy object  thread="+Thread.currentThread().getName());
-            dos.writeUTF(text);
-            System.out.println("'"+text+"' was sent through dos.writeUTF  thread="+Thread.currentThread().getName());
-        } catch (IOException e) {
-            throw new ChatException("Problem writing text through the data output stream",e);
-        }
-    }
-
     public void run() {
-        while(true) {
-            System.out.println("inside run of ConnectionProxy  thread="+Thread.currentThread().getName());
-            try {
-                System.out.println("about to call dis.readUTF  thread="+Thread.currentThread().getName());
-                String text = dis.readUTF();
-                System.out.println("dis.readUTF returned "+text+"     thread="+Thread.currentThread().getName());
-                this.consumer.consume(text);
-                System.out.println("calling consumer.consume() passing over "+text+ "    thread="+Thread.currentThread().getName());
-            } catch(IOException | ChatException e) {
-                try {
-                    this.consumer.consume("error");
-                } catch(ChatException exception) {
-                    exception.printStackTrace();
-                }
+        try {
+            String request = inputReader.readLine();
+
+            if(request.isEmpty()) return;
+
+            Message message = gson.fromJson(request, Message.class);
+
+            CommandInterface command;
+            if (message.getRecipient().equalsIgnoreCase("global")) {
+                command = new GlobalChatCommand(message, this);
+            } else {
+                command = new OneOnOneChatCommand(message, this);
             }
-        }
-    }
+            command.execute();
 
-    @Override
-    public void addConsumer(StringConsumer consumer) {
-        this.consumer = consumer;
-    }
-
-    @Override
-    public void removeConsumer(StringConsumer consumer) {
-        if(this.consumer == consumer){
-            this.consumer = null;
+            // If the client disconnected, remove its socket from the list
+            clientConnections.remove(clientSocket);
+            clientSocket.close();
+            System.out.println("Client disconnected: " + clientSocket.getInetAddress());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
