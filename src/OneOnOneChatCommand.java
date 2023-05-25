@@ -1,6 +1,9 @@
-import com.google.gson.Gson;
+/* Developers details:
+   - Karin Ochayon, 207797002
+   - Dor Uzan, 205890510
+*/
 
-import java.io.IOException;
+import com.google.gson.Gson;
 import java.util.Iterator;
 
 public class OneOnOneChatCommand implements CommandInterface {

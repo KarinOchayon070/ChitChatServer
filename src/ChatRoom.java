@@ -1,5 +1,9 @@
-import com.google.gson.Gson;
+/* Developers details:
+   - Karin Ochayon, 207797002
+   - Dor Uzan, 205890510
+*/
 
+import com.google.gson.Gson;
 import java.net.Socket;
 import java.util.*;
 

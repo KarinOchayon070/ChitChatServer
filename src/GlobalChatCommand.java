@@ -1,7 +1,7 @@
-import com.google.gson.Gson;
-
-import java.io.IOException;
-
+/* Developers details:
+   - Karin Ochayon, 207797002
+   - Dor Uzan, 205890510
+*/
 public class GlobalChatCommand implements CommandInterface {
     private Message message;
     private ConnectionProxy connectionProxy;
