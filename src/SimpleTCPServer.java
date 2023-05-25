@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class SimpleTCPIPServer {
+public class SimpleTCPServer {
     public static void main(String[] args) {
         int port = 1300; // Port number to listen on
 

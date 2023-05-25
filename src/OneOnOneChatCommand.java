@@ -18,8 +18,6 @@ public class OneOnOneChatCommand implements CommandInterface {
 
             ConnectionProxy targetProxy = findConnectionProxyByUsername(recipient);
 
-            this.message.setIsPrivate(true);
-
 
             if(targetProxy == null){
                 this.message.setNickName("SERVER ERROR");
