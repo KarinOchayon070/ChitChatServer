@@ -20,15 +20,15 @@ public class OneOnOneChatCommand implements CommandInterface {
 
 
             if(targetProxy == null){
-                this.message.setNickName("SERVER ERROR");
-                this.message.setMessage("User not found or offline.");
+                this.message.setNickName("*** SERVER ERROR ***");
+                this.message.setMessage("*** User not found or offline ***");
                 this.sendMessageToSelf();
                 return;
             }
 
             if(targetProxy.getClientSocket() == connectionProxy.getClientSocket()){
-                this.message.setNickName("SERVER ERROR");
-                this.message.setMessage("Don't talk to yourself darling");
+                this.message.setNickName("*** SERVER ERROR ***");
+                this.message.setMessage("*** Don't talk to yourself darling ***");
                 this.sendMessageToSelf();
                 return;
         }

@@ -63,7 +63,7 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
             this.setNickName(message.getNickName());
 
             this.globalChatRoom.addClient(this);
-            Message joinedMessage = new Message(message.getNickName(), "Has joined the chat", message.getRecipient() );
+            Message joinedMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has joined the chat ***", message.getRecipient() );
             this.globalChatRoom.broadcastMessage(joinedMessage, this);
 
 
@@ -85,7 +85,7 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
             }
 
 
-            Message leftChatMessage = new Message(message.getNickName(), "Has Left the chat", message.getRecipient() );
+            Message leftChatMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has left the chat ***", message.getRecipient() );
             this.globalChatRoom.broadcastMessage(leftChatMessage, this);
 
             // If the client disconnected, remove its socket from the list
