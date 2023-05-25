@@ -85,6 +85,9 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
             }
 
 
+            Message leftChatMessage = new Message(message.getNickName(), "Has Left the chat", message.getRecipient() );
+            this.globalChatRoom.broadcastMessage(leftChatMessage, this);
+
             // If the client disconnected, remove its socket from the list
             clientConnections.remove(clientSocket);
             globalChatRoom.removeClient(this);
