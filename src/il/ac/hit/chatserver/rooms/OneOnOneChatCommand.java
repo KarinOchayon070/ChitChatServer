@@ -1,11 +1,11 @@
-package il.ac.hit.chatserver.rooms;/*
+/*
  Developers details:
    - Karin Ochayon, 207797002
    - Dor Uzan, 205890510
 */
 
 /*
-    This file (il.ac.hit.chatserver.rooms.OneOnOneChatCommand.java) represents the il.ac.hit.chatserver.rooms.OneOnOneChatCommand class, which implements the il.ac.hit.chatserver.il.ac.hit.chatserver.connections.CommandInterface.
+    This file (OneOnOneChatCommand.java) represents the OneOnOneChatCommand class, which implements the CommandInterface.
     It handles the execution of a command to send a one-on-one chat message between clients. Here's a summary of what the code does:
     - The class has a constructor that initializes the command with the given message and connection proxy.
     - The execute() method is implemented to carry out the execution of the command.
@@ -14,16 +14,16 @@ package il.ac.hit.chatserver.rooms;/*
     - If the recipient is not found or offline, it sets an error message and sends it back to the sender.
     - It checks if the sender is trying to send a message to themselves and handles the case by setting an error message and sending it to the sender.
     - If everything is valid, it sends the one-on-one message to the recipient using the sendMessageToRecipient() method.
-    - The findConnectionProxyByUsername() method iterates over the client il.ac.hit.chatserver.connections and returns the connection proxy associated with the given recipient username.
+    - The findConnectionProxyByUsername() method iterates over the client connections and returns the connection proxy associated with the given recipient username.
     - The sendMessageToRecipient() method converts the message to JSON using Gson and sends it to the recipient's output writer.
     - The sendMessageToSelf() method converts the message to JSON using Gson and sends it back to the sender using their own output writer.
  */
 
+package il.ac.hit.chatserver.rooms;
 import com.google.gson.Gson;
 import il.ac.hit.chatserver.interfaces.CommandInterface;
 import il.ac.hit.chatserver.network.ConnectionProxy;
 import il.ac.hit.chatserver.objects.Message;
-
 import java.util.Iterator;
 
 public class OneOnOneChatCommand implements CommandInterface {
@@ -38,7 +38,7 @@ public class OneOnOneChatCommand implements CommandInterface {
     private Gson gson = new Gson();
 
     /**
-     * Constructor for the il.ac.hit.chatserver.rooms.OneOnOneChatCommand class
+     * Constructor for the OneOnOneChatCommand class
      * Initializes the command with the given message and connection proxy
      *
      * @param message          The message to be sent
@@ -77,10 +77,10 @@ public class OneOnOneChatCommand implements CommandInterface {
     }
 
     /**
-     * Finds the il.ac.hit.chatserver.il.ac.hit.chatserver.network.ConnectionProxy associated with the given recipient username
+     * Finds the ConnectionProxy associated with the given recipient username
      *
      * @param recipient The recipient username
-     * @return The il.ac.hit.chatserver.il.ac.hit.chatserver.network.ConnectionProxy associated with the recipient, or null if not found
+     * @return The ConnectionProxy associated with the recipient, or null if not found
      */
     private ConnectionProxy findConnectionProxyByUsername(String recipient) {
         Iterator<ConnectionProxy> iterator = ConnectionProxy.clientConnections.values().iterator();
@@ -96,7 +96,7 @@ public class OneOnOneChatCommand implements CommandInterface {
     /**
      * Sends the message to the recipient
      *
-     * @param targetProxy The il.ac.hit.chatserver.il.ac.hit.chatserver.network.ConnectionProxy associated with the recipient
+     * @param targetProxy The ConnectionProxy associated with the recipient
      */
     private void sendMessageToRecipient(ConnectionProxy targetProxy) {
         String json = gson.toJson(this.message);

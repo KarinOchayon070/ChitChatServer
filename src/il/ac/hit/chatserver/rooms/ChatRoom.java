@@ -1,14 +1,14 @@
-package il.ac.hit.chatserver.rooms;/*
+/*
  Developers details:
    - Karin Ochayon, 207797002
    - Dor Uzan, 205890510
 */
 
 /*
- This file (il.ac.hit.chatserver.rooms.ChatRoom.java) represents a il.ac.hit.chatserver.rooms.ChatRoom class that facilitates communication between clients in a chat application.
+ This file (ChatRoom.java) represents a ChatRoom class that facilitates communication between clients in a chat application.
  It allows clients to join or leave the chat room, broadcast text or message objects to all clients except the sender.
  Here are the key functionalities of the code:
-  - The il.ac.hit.chatserver.rooms.ChatRoom class manages a chat room by storing the name of the room, maintaining a map of client sockets and their corresponding connection proxies,
+  - The ChatRoom class manages a chat room by storing the name of the room, maintaining a map of client sockets and their corresponding connection proxies,
     and using Gson for JSON serialization.
   - The addClient method adds a client to the chat room by associating the client's socket with its connection proxy in the connectionProxies map.
   - The removeClient method removes a client from the chat room by removing the client's socket and connection proxy from the connectionProxies map.
@@ -17,10 +17,10 @@ package il.ac.hit.chatserver.rooms;/*
     It iterates over the connectionProxies map and sends the message to each client's output writer.
  */
 
+package il.ac.hit.chatserver.rooms;
 import com.google.gson.Gson;
 import il.ac.hit.chatserver.network.ConnectionProxy;
 import il.ac.hit.chatserver.objects.Message;
-
 import java.net.Socket;
 import java.util.*;
 
@@ -32,14 +32,14 @@ public class ChatRoom {
     // Stores the connection proxies for each client socket in the chat room
     private Map<Socket, ConnectionProxy> connectionProxies;
 
-    // Stores the mapping of chat room names to il.ac.hit.chatserver.rooms.ChatRoom objects for one-on-one chat rooms
+    // Stores the mapping of chat room names to ChatRoom objects for one-on-one chat rooms
     private static Map<String, ChatRoom> oneOnOneChatRooms = new HashMap<>();
 
     // Gson object for JSON serialization and deserialization
     private Gson gson =  new Gson();
 
     /**
-     * Constructs a il.ac.hit.chatserver.rooms.ChatRoom object with the specified name.
+     * Constructs a ChatRoom object with the specified name.
      *
      * @param name the name of the chat room
      */

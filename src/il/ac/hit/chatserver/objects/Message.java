@@ -1,17 +1,20 @@
-package il.ac.hit.chatserver.objects;/*
+/*
  Developers details:
    - Karin Ochayon, 207797002
    - Dor Uzan, 205890510
 */
 
 /*
-    This file (il.ac.hit.chatserver.objects.Message.java) defines a il.ac.hit.chatserver.objects.Message class that represents a chat message.
+    This file (Message.java) defines a Message class that represents a chat message.
     It has three instance variables: nickName, message, and recipient, which store the nickname of the sender,
     the content of the message, and the recipient of the message, respectively.
-    The class provides a constructor to initialize the il.ac.hit.chatserver.objects.Message object with the specified nickname, message, and recipient.
+    The class provides a constructor to initialize the Message object with the specified nickname, message, and recipient.
     It also includes setter methods (setNickName(), setMessage(), setRecipient()) to modify the values of the instance variables,
     and getter methods (getNickName(), getMessage(), getRecipient()) to retrieve the values of the instance variables.
  */
+
+
+package il.ac.hit.chatserver.objects;
 
 /**
  * Represents a chat message
@@ -28,11 +31,11 @@ public class Message {
     private String recipient;
 
     /**
-     * Constructs a il.ac.hit.chatserver.objects.Message object with the specified nickname, message, and recipient
+     * Constructs a Message object with the specified nickname, message, and recipient
      *
-     * @param nickName  The nickname of the sender.
-     * @param message   The content of the message.
-     * @param recipient The recipient of the message.
+     * @param nickName  The nickname of the sender
+     * @param message   The content of the message
+     * @param recipient The recipient of the message
      */
     public Message(String nickName, String message, String recipient) {
         this.nickName = nickName;

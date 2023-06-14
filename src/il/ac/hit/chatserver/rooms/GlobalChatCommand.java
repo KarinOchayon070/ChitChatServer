@@ -1,15 +1,16 @@
-package il.ac.hit.chatserver.rooms;/*
+/*
  Developers details:
    - Karin Ochayon, 207797002
    - Dor Uzan, 205890510
 */
 
 /*
-    This file (il.ac.hit.chatserver.rooms.GlobalChatCommand.java) defines a class called il.ac.hit.chatserver.rooms.GlobalChatCommand that represents a command to execute a global chat message.
-    When the execute() method of this command is called, it sets the chat room of the associated il.ac.hit.chatserver.il.ac.hit.chatserver.network.ConnectionProxy object to the global chat room,
+    This file (GlobalChatCommand.java) defines a class called GlobalChatCommand that represents a command to execute a global chat message.
+    When the execute() method of this command is called, it sets the chat room of the associated ConnectionProxy object to the global chat room,
     prints a log message indicating the reception of a global message from a client, and broadcasts the message to all clients in the global chat room.
  */
 
+package il.ac.hit.chatserver.rooms;
 import il.ac.hit.chatserver.interfaces.CommandInterface;
 import il.ac.hit.chatserver.network.ConnectionProxy;
 import il.ac.hit.chatserver.objects.Message;
@@ -23,7 +24,7 @@ public class GlobalChatCommand implements CommandInterface {
     private ConnectionProxy connectionProxy;
 
     /**
-     * Constructs a il.ac.hit.chatserver.rooms.GlobalChatCommand object with the provided message and connection proxy
+     * Constructs a GlobalChatCommand object with the provided message and connection proxy
      *
      * @param message         The message to be sent
      * @param connectionProxy The connection proxy associated with the client
