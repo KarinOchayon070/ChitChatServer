@@ -13,7 +13,6 @@
     and getter methods (getNickName(), getMessage(), getRecipient()) to retrieve the values of the instance variables.
  */
 
-
 package il.ac.hit.chatserver.objects;
 
 /**

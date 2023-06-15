@@ -17,7 +17,7 @@
     - The constructor initializes the ConnectionProxy object by setting the client socket, creating input and output streams, and initializing the iterator.
     - The run() method is overridden to handle client communication. It reads messages from the client, parses them using Gson into Message objects, sets the nickname,
       adds the client to the global chat room, broadcasts a join message, reads further messages, and executes the corresponding commands based on the recipient.
-    - When a client leaves the chat, a left chat message is broadcasted, the client's socket is removed from the connections map, and the client socket is closed.
+    - When a client leaves the chat, a left chat message is broadcast, the client's socket is removed from the connections map, and the client socket is closed.
     - The next() and hasNext() methods are implemented from the ClientConnectionIterator interface to iterate over client connections.
  */
 
@@ -25,6 +25,7 @@ package il.ac.hit.chatserver.network;
 import com.google.gson.Gson;
 import il.ac.hit.chatserver.interfaces.ClientConnectionIterator;
 import il.ac.hit.chatserver.interfaces.CommandInterface;
+import il.ac.hit.chatserver.objects.ChatException;
 import il.ac.hit.chatserver.objects.Message;
 import il.ac.hit.chatserver.rooms.ChatRoom;
 import il.ac.hit.chatserver.rooms.GlobalChatCommand;
@@ -98,16 +99,25 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
     }
 
     // Constructor that initializes the connection proxy with the client socket and sets up input and output streams
-    public ConnectionProxy(Socket clientSocket) throws IOException {
-
+    public ConnectionProxy(Socket clientSocket) throws IOException, ChatException {
         // Set the client socket for this connection proxy
         this.clientSocket = clientSocket;
 
         // Create a reader to read input from the client socket
-        this.inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        try {
+            this.inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ChatException("Failed to create input reader.", e);
+        }
 
         // Create a writer to send output to the client socket
-        this.outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        try {
+            this.outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ChatException("Failed to create output writer.", e);
+        }
 
         // Initialize the iterator to iterate over the client connections
         iterator = ConnectionProxy.clientConnections.values().iterator();
@@ -146,19 +156,29 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                try {
+                    throw new ChatException("Error occurred while reading/handling messages.", e);
+                } catch (ChatException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
 
             // Broadcast a left chat message when the client leaves
-            Message leftChatMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has left the chat ***", message.getRecipient());
-            this.globalChatRoom.broadcastMessage(leftChatMessage, this);
+            Message leftMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has left the chat ***", message.getRecipient());
+            this.globalChatRoom.broadcastMessage(leftMessage, this);
 
-            // If the client disconnected, remove its socket from the list and close the socket
-            clientConnections.remove(clientSocket);
-            globalChatRoom.removeClient(this);
+            // Remove the client's socket from the connections map
+            clientConnections.remove(this.getClientSocket());
+
+            // Close the client socket
             clientSocket.close();
-            System.out.println("Client disconnected: " + clientSocket.getInetAddress());
         } catch (IOException e) {
             e.printStackTrace();
+            try {
+                throw new ChatException("Error occurred while reading client input.", e);
+            } catch (ChatException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

@@ -11,12 +11,13 @@
  */
 
 import il.ac.hit.chatserver.network.ConnectionProxy;
+import il.ac.hit.chatserver.objects.ChatException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * A simple TCP server that listens on a specified port and handles client il.ac.hit.chatserver.connections
+ * A simple TCP server that listens on a specified port and handles client connections
  */
 public class SimpleTCPServer {
     /**
@@ -44,6 +45,8 @@ public class SimpleTCPServer {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ChatException e) {
+            throw new RuntimeException(e);
         }
     }
 }
