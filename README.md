@@ -1,11 +1,12 @@
-# ChitChatServer
+# 💬 ChitChatServer 🗨️
 
-Het there!
+Hey there 👋
 
-ChitChat App is a TCP/IP based Client-Server application that allows multiple clients to chat with each other. It provides a user-friendly GUI developed in Java Swing.
-This repository is the server side of the application, if you want, this is the repository to the client side - https://github.com/KarinOchayon070/ChitChatClient.git.
+- 💻 ChitChat App is a TCP/IP based Client-Server application that allows multiple clients to chat with each other.
+- 💻 This repository is the server side of the application, if you want, this is the repository to the client side - https://github.com/KarinOchayon070/ChitChatClient.git.
+- 💻 Check out our explanatory video video on YouTube - https://www.youtube.com/watch?v=xpIKM1Jrr24&t=1s&ab_channel=KarinOchayon.
 
-## Features
+## Features 🌿
 
 - Real-time chat between multiple clients connected to the server.
 - Ability to send private direct messages to specific participants.
@@ -15,7 +16,7 @@ This repository is the server side of the application, if you want, this is the 
 - Command pattern used for sending messages to all participants or privately.
 - Server-side implements the Iterator design pattern using the java.util.Iterator interface.
 
-## Design Patterns
+## Design Patterns ✔️
 
 - Proxy: The Socket objects on both the server and client sides are surrogated using the Proxy design pattern.
 - Composite: The client's GUI is developed using Swing and implements the Composite design pattern.
