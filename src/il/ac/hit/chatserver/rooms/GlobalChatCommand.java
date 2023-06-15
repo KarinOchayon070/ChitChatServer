@@ -34,6 +34,11 @@ public class GlobalChatCommand implements CommandInterface {
         this.connectionProxy = connectionProxy;
     }
 
+    /**
+     * Executes the global chat command by setting the chat room of the connection proxy to the global chat room
+     * printing a log message indicating the reception of a global message from the client, and broadcasting the message
+     * to all clients in the global chat room
+     */
     @Override
     public void execute() {
         // Set the chat room of the connection proxy to the global chat room

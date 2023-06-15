@@ -49,6 +49,12 @@ public class OneOnOneChatCommand implements CommandInterface {
         this.connectionProxy = connectionProxy;
     }
 
+
+    /**
+     * Executes the one-on-one chat command by retrieving the recipient from the message
+     * searching for the connection proxy associated with the recipient, and sending the message
+     * to the recipient or handling error cases
+     */
     @Override
     public void execute() {
         String recipient = this.message.getRecipient();

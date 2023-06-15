@@ -68,62 +68,92 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
     // Gson object for JSON serialization/deserialization
     private static Gson gson = new Gson();
 
-    // Getter for the client socket
+    /**
+     * Getter for the client socket.
+     *
+     * @return The client socket.
+     */
     public Socket getClientSocket() {
         return clientSocket;
     }
 
-    // Getter for the input reader
+    /**
+     * Getter for the input reader.
+     *
+     * @return The input reader.
+     */
     public BufferedReader getInputReader() {
         return inputReader;
     }
 
-    // Getter for the output writer
+    /**
+     * Getter for the output writer.
+     *
+     * @return The output writer.
+     */
     public PrintWriter getOutputWriter() {
         return outputWriter;
     }
 
-    // Getter for the client's nickname
+    /**
+     * Getter for the client's nickname.
+     *
+     * @return The client's nickname.
+     */
     public String getNickName() {
         return nickName;
     }
 
-    // Setter for the client's nickname
+    /**
+     * Setter for the client's nickname.
+     *
+     * @param nickName The client's nickname.
+     */
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }
 
-    // Setter for the chat room
+    /**
+     * Setter for the chat room.
+     *
+     * @param chatRoom The chat room.
+     */
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
     }
 
-    // Constructor that initializes the connection proxy with the client socket and sets up input and output streams
+    /**
+     * Constructor that initializes the ConnectionProxy with the client socket and sets up input and output streams.
+     *
+     * @param clientSocket The client socket.
+     * @throws IOException   If an I/O error occurs while creating the input reader or output writer.
+     * @throws ChatException If a chat-related exception occurs.
+     */
     public ConnectionProxy(Socket clientSocket) throws IOException, ChatException {
-        // Set the client socket for this connection proxy
         this.clientSocket = clientSocket;
 
-        // Create a reader to read input from the client socket
         try {
+            // Create a reader to read input from the client socket
             this.inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
             throw new ChatException("Failed to create input reader.", e);
         }
 
-        // Create a writer to send output to the client socket
         try {
+            // Create a writer to send output to the client socket
             this.outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ChatException("Failed to create output writer.", e);
         }
 
-        // Initialize the iterator to iterate over the client connections
         iterator = ConnectionProxy.clientConnections.values().iterator();
     }
 
-    // Override the run() method to handle client communication
+    /**
+     * Override the run() method to handle client communication.
+     */
     @Override
     public void run() {
         try {
@@ -131,17 +161,14 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
 
             if (request.isEmpty()) return;
 
-            // Parse the request as a Message object using Gson
             Message message = gson.fromJson(request, Message.class);
             this.setNickName(message.getNickName());
 
-            // Add the client to the global chat room and broadcast a joined message
             this.globalChatRoom.addClient(this);
             Message joinedMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has joined the chat ***", message.getRecipient());
             this.globalChatRoom.broadcastMessage(joinedMessage, this);
 
             try {
-                // Continue reading messages from the client and execute corresponding commands
                 while ((request = this.getInputReader().readLine()) != null) {
                     message = gson.fromJson(request, Message.class);
 
@@ -163,14 +190,11 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
                 }
             }
 
-            // Broadcast a left chat message when the client leaves
             Message leftMessage = new Message(message.getNickName(), "*** " + message.getNickName() + " has left the chat ***", message.getRecipient());
             this.globalChatRoom.broadcastMessage(leftMessage, this);
 
-            // Remove the client's socket from the connections map
             clientConnections.remove(this.getClientSocket());
 
-            // Close the client socket
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -182,13 +206,21 @@ public class ConnectionProxy extends Thread implements ClientConnectionIterator 
         }
     }
 
-    // Implement the next() method from the ClientConnectionIterator interface
+    /**
+     * Implement the next() method from the ClientConnectionIterator interface.
+     *
+     * @return The next ConnectionProxy object.
+     */
     @Override
     public ConnectionProxy next() {
         return iterator.next();
     }
 
-    // Implement the hasNext() method from the ClientConnectionIterator interface
+    /**
+     * Implement the hasNext() method from the ClientConnectionIterator interface.
+     *
+     * @return True if there is a next ConnectionProxy object, false otherwise.
+     */
     @Override
     public boolean hasNext() {
         return iterator.hasNext();

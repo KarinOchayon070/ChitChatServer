@@ -23,7 +23,6 @@ public class ChatException extends Exception{
      *
      * @param message the error message describing the exception
      */
-
     public ChatException(String message) {
         super(message);
     }
@@ -34,7 +33,6 @@ public class ChatException extends Exception{
      * @param message the error message describing the exception
      * @param cause   the cause of the exception
      */
-
     public ChatException(String message, Throwable cause) {
         super(message, cause);
     }

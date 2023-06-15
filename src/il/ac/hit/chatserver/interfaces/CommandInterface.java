@@ -11,6 +11,15 @@
  */
 
 package il.ac.hit.chatserver.interfaces;
+
+/**
+ * The CommandInterface represents an interface for executing commands
+ * Implementing classes should provide the implementation for the execute() method
+ */
 public interface CommandInterface {
+
+    /**
+     * Executes the command
+     */
     void execute();
 }
